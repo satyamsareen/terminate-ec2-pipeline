@@ -17,9 +17,9 @@ current_config = Config(
 def send_termination_notification(instance_id):
 
     AWS_ACCOUNT_ID={'HVDSDMLAB':463423328685,'OPIS Control':218790088255,'OPIS Prod':530888451175,'OPIS PreProd':253049054146}
-    AWS_ACCOUNT_REGION=sys.argv[2]
+    AWS_ACCOUNT_REGION="us-west-1"
     TOPIC_NAME="bt3_topic"
-    sns = boto3.client('sns',config=current_config)
+    sns = boto3.client('sns',region_name=AWS_ACCOUNT_REGION)
     response = sns.publish(
         TopicArn='arn:aws:sns:'+AWS_ACCOUNT_REGION+":"+str(AWS_ACCOUNT_ID[sys.argv[1]])+":"+TOPIC_NAME,
         Message="REAN Cloud automation is terminatinng " + instance_id+" as it was running for more than than permitted time",
