@@ -2,21 +2,32 @@ import boto3
 import time
 from datetime import datetime
 import time
+import sys
+from botocore import config
+from botocore.config import Config
+
+# sts = boto3.client('sts')
+# print(sts.get_caller_identity())
+
+current_config = Config(
+    region_name = sys.argv[2],
+)
 
 
 def send_termination_notification(instance_id):
-    AWS_ACCOUNT_ID="463423328685"
-    AWS_ACCOUNT_REGION="ap-southeast-1"
+
+    AWS_ACCOUNT_ID={'HVDSDMLAB':463423328685,'OPIS Control':218790088255,'OPIS Prod':530888451175,'OPIS PreProd':253049054146}
+    AWS_ACCOUNT_REGION=sys.argv[2]
     TOPIC_NAME="bt3_topic"
-    sns = boto3.client('sns')
+    sns = boto3.client('sns',config=current_config)
     response = sns.publish(
-        TopicArn='arn:aws:sns:'+AWS_ACCOUNT_REGION+":"+AWS_ACCOUNT_ID+":"+TOPIC_NAME,
+        TopicArn='arn:aws:sns:'+AWS_ACCOUNT_REGION+":"+str(AWS_ACCOUNT_ID[sys.argv[1]])+":"+TOPIC_NAME,
         Message="REAN Cloud automation is terminatinng " + instance_id+" as it was running for more than than permitted time",
         Subject='[!] INSTANCE TERMINATION NOTIFICATION',
     )
 
 
-ec2 = boto3.client('ec2')
+ec2 = boto3.client('ec2',config=current_config)
 response = ec2.describe_instances()
 # print(response)
 
